@@ -1,3 +1,5 @@
+"use client";
+import { login } from "@/lib/file-actions";
 import Image from "next/image";
 import Link from "next/link";
 import React from "react";
@@ -19,7 +21,10 @@ const Navbar = () => {
           <Link href={"/globe"} className="text-slate-900 hover:text-sky-500">
             Globe
           </Link>
-          <button className="flex items-center justify-center cursor-pointer bg-gray-800 hover:bg-gray-900 text-white p-2 rounded-sm ">
+          <button
+            className="flex items-center justify-center cursor-pointer bg-gray-800 hover:bg-gray-900 text-white p-2 rounded-sm "
+            onClick={login}
+          >
             Sign In{" "}
             <svg
               className="w-6 h-6 ml-2"
