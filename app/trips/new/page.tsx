@@ -1,20 +1,28 @@
 "use client";
+
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import createTrip from "@/lib/actions/create-trip";
-import { cn } from "@/lib/utils";
-import { useTransition } from "react";
 
-const NewTrip = () => {
+import { cn } from "@/lib/utils";
+import { UploadButton } from "@/lib/uploadthing";
+import { useState, useTransition } from "react";
+import Image from "next/image";
+import createTrip from "@/lib/actions/create-trip";
+
+export default function NewTrip() {
   const [isPending, startTransition] = useTransition();
+  const [imageUrl, setImageUrl] = useState<string | null>(null);
   return (
-    <div className="max-w-md mx-auto mt-12">
+    <div className="max-w-lg mx-auto mt-10">
       <Card>
-        <CardHeader>New Trip</CardHeader>
+        <CardHeader> New Trip</CardHeader>
         <CardContent>
           <form
-            className="space-y-4"
+            className="space-y-6"
             action={(formData: FormData) => {
+              if (imageUrl) {
+                formData.append("imageUrl", imageUrl);
+              }
               startTransition(() => {
                 createTrip(formData);
               });
@@ -22,17 +30,18 @@ const NewTrip = () => {
           >
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
+                {" "}
                 Title
               </label>
               <input
                 type="text"
                 name="title"
-                required
-                placeholder="Japan Trip...."
+                placeholder="Japan trip..."
                 className={cn(
-                  "w-full border border-gray-300 px-4 py-2",
+                  "w-full border border-gray-300 px-3 py-2",
                   "rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 )}
+                required
               />
             </div>
             <div>
@@ -40,17 +49,17 @@ const NewTrip = () => {
                 Description
               </label>
               <textarea
-                required
                 name="description"
-                placeholder="Trip Description"
+                placeholder="Trip description..."
                 className={cn(
-                  "w-full border border-gray-300 px-4 py-2",
+                  "w-full border border-gray-300 px-3 py-2",
                   "rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 )}
+                required
               />
             </div>
-            <div className="flex items-center gap-4 justify-between">
-              <div className="w-full">
+            <div className="grid grid-cols-2 gap-4">
+              <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   Start Date
                 </label>
@@ -58,26 +67,55 @@ const NewTrip = () => {
                   type="date"
                   name="startDate"
                   className={cn(
-                    "w-full border border-gray-300 px-4 py-2",
-                    "rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 "
+                    "w-full border border-gray-300 px-3 py-2",
+                    "rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                   )}
                 />
               </div>
-              <div className="w-full">
+              <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
+                  {" "}
                   End Date
                 </label>
                 <input
                   type="date"
                   name="endDate"
                   className={cn(
-                    "w-full border border-gray-300 px-4 py-2",
+                    "w-full border border-gray-300 px-3 py-2",
                     "rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                   )}
                 />
               </div>
             </div>
-            <Button type="submit" disabled={isPending} className="w-full">
+            <div>
+              <label> Trip Image</label>
+
+              {imageUrl && (
+                <Image
+                  src={imageUrl}
+                  alt="Trip Preview"
+                  className="w-full mb-4 rounded-md max-h-48 object-cover"
+                  width={300}
+                  height={100}
+                />
+              )}
+              <UploadButton
+                endpoint="imageUploader"
+                onClientUploadComplete={(res) => {
+                  if (res && res[0].ufsUrl) {
+                    setImageUrl(res[0].ufsUrl);
+                  }
+                }}
+                onUploadError={(error: Error) => {
+                  console.error("Upload error: ", error);
+                }}
+              />
+            </div>
+            <Button
+              type="submit"
+              disabled={isPending}
+              className="w-full cursor-pointer"
+            >
               {isPending ? "Creating..." : "Create Trip"}
             </Button>
           </form>
@@ -85,6 +123,4 @@ const NewTrip = () => {
       </Card>
     </div>
   );
-};
-
-export default NewTrip;
+}

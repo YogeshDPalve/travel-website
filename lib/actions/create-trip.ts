@@ -13,6 +13,7 @@ async function createTrip(formData: FormData) {
   const description = formData.get("description")?.toString();
   const startDateStr = formData.get("startDate")?.toString();
   const endDateStr = formData.get("endDate")?.toString();
+  const imageUrl = formData.get("imageUrl")?.toString();
 
   console.log([title, description, startDateStr, endDateStr]);
   if (!title || !description || !startDateStr || !endDateStr) {
@@ -26,6 +27,7 @@ async function createTrip(formData: FormData) {
     data: {
       title,
       description,
+      imageUrl,
       startDate,
       endDate,
       userId: session.user.id,
