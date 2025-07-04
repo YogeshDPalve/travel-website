@@ -1,14 +1,25 @@
+"use client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import createTrip from "@/lib/actions/create-trip";
 import { cn } from "@/lib/utils";
+import { useTransition } from "react";
 
 const NewTrip = () => {
+  const [isPending, startTransition] = useTransition();
   return (
     <div className="max-w-md mx-auto mt-12">
       <Card>
         <CardHeader>New Trip</CardHeader>
         <CardContent>
-          <form className="space-y-4">
+          <form
+            className="space-y-4"
+            action={(formData: FormData) => {
+              startTransition(() => {
+                createTrip(formData);
+              });
+            }}
+          >
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Title
@@ -66,8 +77,8 @@ const NewTrip = () => {
                 />
               </div>
             </div>
-            <Button type="submit" className="w-full">
-              Create Trip
+            <Button type="submit" disabled={isPending} className="w-full">
+              {isPending ? "Creating..." : "Create Trip"}
             </Button>
           </form>
         </CardContent>
